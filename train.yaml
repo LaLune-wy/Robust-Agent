@@ -1,0 +1,50 @@
+### model
+model_name_or_path: /root/autodl-tmp/model/Qwen/Qwen2.5-0.5B-Instruct
+
+### method
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_rank: 8
+lora_target: all
+
+### dataset
+dataset: alpaca_format_data,glaive_toolcall_zh_demo
+dataset_dir: /root/autodl-tmp/LLaMA-Factory/data
+template: qwen
+cutoff_len: 2048 # 截断长度
+max_samples: 1000 # 最大样本数，所有数据集加起来最多样本数
+overwrite_cache: true # 预处理可能非常耗时（尤其是大规模数据），
+# 因此首次运行时会生成缓存文件（如 *.arrow、*.bin 或 *.pkl），
+# 后续直接加载缓存文件，避免重复计算。
+preprocessing_num_workers: 8 # 预处理数据集的线程数 生成上面缓存的数据操作
+dataloader_num_workers: 4 # 加载数据集的线程数 从缓存组装batch的操作
+
+### output
+output_dir: saves
+logging_steps: 10  # 默认行为：同时输出到控制台和日志文件，还会输出到tensorboard
+save_steps: 400 # 保存后的内容使用配置文件resume_from_checkpoint: checkpoint-1000/ 恢复训练
+plot_loss: true # 输出损失值的数字日志（如 Step 10 | Loss: 0.52）。
+overwrite_output_dir: true
+save_only_model: false
+report_to: tensorboard  # choices: [none, wandb, tensorboard, swanlab, mlflow]
+
+### train
+per_device_train_batch_size: 4
+gradient_accumulation_steps: 1
+learning_rate: 2.0e-5
+num_train_epochs: 3.0
+lr_scheduler_type: linear
+warmup_ratio: 0.25
+fp16: true
+gradient_checkpointing: true
+ddp_timeout: 180000000
+resume_from_checkpoint: null
+
+### eval
+# val_size: 0.1
+# per_device_eval_batch_size: 1
+# eval_strategy: steps
+# eval_steps: 500
+
+
